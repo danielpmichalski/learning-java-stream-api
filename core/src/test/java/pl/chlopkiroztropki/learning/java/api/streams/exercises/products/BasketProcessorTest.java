@@ -98,6 +98,12 @@ class BasketProcessorTest {
   }
 
   @Test
+  void returnsTwoProductForTwoProductBasket() {
+    BasketStatistics statistics = getTwoProductsBasketStatistics();
+    Assertions.assertThat(statistics.getNumberOfProducts()).isEqualTo(2);
+  }
+
+  @Test
   void throwsIllegalArgumentException() {
     assertThrows(IllegalArgumentException.class, () -> processor.getStatistics(null));
   }
