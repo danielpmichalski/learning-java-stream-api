@@ -1,9 +1,11 @@
 package pl.chlopkiroztropki.learning.java.api.streams.exercises.products;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class LoopBasedBasketProcessor implements BasketProcessor {
+public class LoopBasedBasketProcessor implements BasketStatisticsProcessor {
 
   private static final BasketStatistics EMPTY_BASKET_STATISTICS = BasketStatistics.builder()
       .numberOfProducts(0)
@@ -13,12 +15,43 @@ public class LoopBasedBasketProcessor implements BasketProcessor {
 
   @Override
   public BasketStatistics getStatistics(Basket basket) {
-    if (basket == null) {
-      throw new IllegalArgumentException();
-    } else if (basket.getNumberOfProducts() == 0) {
+    assertNotNull(basket);
+    if (basket.getNumberOfProducts() == 0) {
       return EMPTY_BASKET_STATISTICS;
     } else {
       return calculateStatistics(basket);
+    }
+  }
+
+  @Override
+  public Map<Category, Integer> getNumberOfProductsPerCategories(Basket basket) {
+    assertNotNull(basket);
+
+    Map<Category, Integer> result = initProductsNumberForCategoryMap();
+    for (Product product : basket.getProducts()) {
+      int currentValue = result.get(product.getCategory());
+      result.put(product.getCategory(), currentValue + 1);
+    }
+
+    return result;
+  }
+
+  @Override
+  public Integer getNumberOfProducts(Basket basket, Category category) {
+    assertNotNull(basket);
+    assertNotNull(category);
+    Integer result = 0;
+    for (Product product : basket.getProducts()) {
+      if (category == product.getCategory()) {
+        result++;
+      }
+    }
+    return result;
+  }
+
+  private void assertNotNull(Object object) {
+    if (object == null) {
+      throw new IllegalArgumentException();
     }
   }
 
@@ -28,16 +61,11 @@ public class LoopBasedBasketProcessor implements BasketProcessor {
     Double totalPrice = calculateTotalPrice(products);
     int numberOfProducts = basket.getNumberOfProducts();
 
-    BasketStatistics statistics = BasketStatistics.builder()
+    return BasketStatistics.builder()
         .numberOfProducts(numberOfProducts)
         .totalPrice(totalPrice)
         .averagePrice(totalPrice / numberOfProducts)
         .build();
-
-    Product firstProduct = products.get(0);
-    statistics.setNumberOfProductsForCategory(firstProduct.getCategory(), 1);
-
-    return statistics;
   }
 
   private Double calculateTotalPrice(List<Product> products) {
@@ -46,6 +74,14 @@ public class LoopBasedBasketProcessor implements BasketProcessor {
       totalPrice += product.getPrice();
     }
     return totalPrice;
+  }
+
+  private Map<Category, Integer> initProductsNumberForCategoryMap() {
+    Map<Category, Integer> productNumberForCategoryMap = new HashMap<>();
+    for (Category category : Category.values()) {
+      productNumberForCategoryMap.putIfAbsent(category, 0);
+    }
+    return productNumberForCategoryMap;
   }
 
 }
