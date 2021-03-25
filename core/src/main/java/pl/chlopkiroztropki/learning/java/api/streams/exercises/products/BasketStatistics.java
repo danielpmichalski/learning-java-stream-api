@@ -18,8 +18,6 @@ public class BasketStatistics {
   private final Double totalPrice;
   // średnia cena
   private final Double averagePrice;
-  // mediana cen
-//  private final Double priceMedian;
 
   public Integer getNumberOfProductsPerCategory(Category category) {
     return numberOfProductsPerCategories.get(category);
@@ -38,5 +36,4 @@ public class BasketStatistics {
   // później
   // cena całkowita per kategoria
   // średnia cena per kategoria
-  // mediana cen per kategoria
 }
